@@ -1,0 +1,30 @@
+stages:
+  - compile
+  - deploy
+
+compile-express:
+  image: "node:8.10"
+  stage: compile
+  script:
+    - npm install
+  only:
+    - develop
+
+build-docker-image:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: deploy
+  environment: staging
+  variables:
+    CONTAINER_IMAGE: aldialvayadi2/node-easy
+  script:
+    - 'ls'
+    - 'docker login -u 30112002 -p S@kti212330 docker.io'
+    - 'docker build -t $CONTAINER_IMAGE:latest .'   
+    - 'apk update'
+    - 'apk add py-pip python3-dev libffi-dev openssl-dev gcc libc-dev rust cargo make'
+    - 'pip install docker-compose'
+    - 'docker-compose up -d'
+  only:
+    - develop

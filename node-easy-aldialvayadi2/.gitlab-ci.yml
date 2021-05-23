@@ -1,0 +1,27 @@
+stages:
+  - compile
+  - deploy
+
+compile-express:
+  image: "node:8.10"
+  stage: compile
+  script:
+    - npm install
+  only:
+    - develop
+
+build-docker-image:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: deploy
+  environment: staging
+  variables:
+    CONTAINER_IMAGE: 30112002/node-easy
+  script:
+    - 'ls'
+    - 'docker login -u 30112002 -p S@kti212330 docker.io'
+    - 'docker build -t $CONTAINER_IMAGE:latest .'   
+    - 'docker push $CONTAINER_IMAGE:latest'
+  only:
+    - develop
